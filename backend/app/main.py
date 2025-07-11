@@ -3,8 +3,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 
 from app.routes.user_routes import router
+from app.database import Base, engine
+from app.models import user  # Asegúrate de importar tus modelos
+from app.routes import report_routes  # 👈 importante
 
 app = FastAPI()
+
+# 👇 esto es lo que activa las rutas
+app.include_router(report_routes.router)
 
 # CORS (por si usas frontend en otro puerto)
 app.add_middleware(
@@ -47,3 +53,6 @@ def custom_openapi():
 
 # 🔁 Cambiar el openapi por defecto
 app.openapi = custom_openapi
+
+# Crear tablas automáticamente al iniciar
+Base.metadata.create_all(bind=engine)
